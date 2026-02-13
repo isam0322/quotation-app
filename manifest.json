@@ -1,0 +1,16 @@
+{
+    "name": "Quotation - 言葉の美術館",
+    "short_name": "Quotation",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#121212",
+    "theme_color": "#121212",
+    "description": "あなたの心に響いた言葉を記録する、パーソナルな名言集アプリ。",
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml"
+        }
+    ]
+}
