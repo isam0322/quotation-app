@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quotation - 言葉の美術館</title>
+
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Quotation">
+    <link rel="apple-touch-icon" href="icon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500&family=Shippori+Mincho:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <h1>Quotation</h1>
+                <p class="subtitle">言葉の美術館</p>
+            </div>
+            <div class="header-controls">
+                <button id="search-toggle-btn" class="icon-btn" aria-label="検索"><i class="fas fa-search"></i></button>
+                <button id="add-quote-btn" class="primary-btn"><i class="fas fa-pen-nib"></i> 記録する</button>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>ライブラリ</h3>
+                    <ul class="nav-links">
+                        <li class="nav-item active" data-type="all" data-value="all">
+                            <i class="fas fa-layer-group"></i> すべて
+                        </li>
+                        <li class="nav-item" data-type="favorites" data-value="favorites">
+                            <i class="fas fa-star"></i> お気に入り
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>著者 (Authors)</h3>
+                    <ul class="nav-links" id="author-list">
+                        <!-- Injected by JS -->
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>タグ (Tags)</h3>
+                    <ul class="nav-links" id="tag-list">
+                        <!-- Injected by JS -->
+                    </ul>
+                </div>
+            </aside>
+
+            <div class="content-area">
+                <section id="search-section" class="search-section hidden">
+                    <div class="search-wrapper">
+                        <div class="search-input-group">
+                            <select id="search-scope" class="search-scope-select">
+                                <option value="all">すべて</option>
+                                <option value="content">名言</option>
+                                <option value="author">著者</option>
+                                <option value="tag">タグ</option>
+                            </select>
+                            <div class="input-container">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="search-input" placeholder="検索...">
+                                <button id="clear-search" class="icon-btn-small hidden"><i
+                                        class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-wrapper">
+                        <button class="filter-chip active" data-category="all">すべて</button>
+                        <button class="filter-chip" data-category="Business">ビジネス</button>
+                        <button class="filter-chip" data-category="Philosophy">哲学</button>
+                        <button class="filter-chip" data-category="Literature">文学</button>
+                        <button class="filter-chip" data-category="Life">人生</button>
+                        <button class="filter-chip" data-category="Motivation">意欲</button>
+                    </div>
+                </section>
+
+                <main class="quotes-grid" id="quotes-list">
+                    <!-- Quotes will be injected here -->
+                </main>
+            </div>
+        </div>
+
+        <!-- Modal for Adding/Editing -->
+        <div id="quote-modal" class="modal hidden">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">言葉を記録する</h2>
+                    <button class="close-modal"><i class="fas fa-times"></i></button>
+                </div>
+                <form id="quote-form">
+                    <input type="hidden" id="quote-id">
+
+                    <div class="form-group main-input">
+                        <label for="content">名言</label>
+                        <textarea id="content" required placeholder="心に響いた言葉を入力..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="author">著者</label>
+                            <input type="text" id="author" placeholder="名前">
+                        </div>
+                        <div class="form-group">
+                            <label for="source">出典・作品名</label>
+                            <input type="text" id="source" placeholder="書籍や映画のタイトル">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category">カテゴリ</label>
+                            <select id="category">
+                                <option value="General">未分類</option>
+                                <option value="Business">ビジネス</option>
+                                <option value="Philosophy">哲学</option>
+                                <option value="Literature">文学</option>
+                                <option value="Life">人生</option>
+                                <option value="Motivation">モチベーション</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tags">タグ</label>
+                            <input type="text" id="tags" placeholder="カンマ区切り (例: 勉強, 努力)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="note">自分のメモ</label>
+                        <textarea id="note" class="small-textarea" placeholder="なぜこの言葉を選んだのか、その時の感情など..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn close-modal-btn">キャンセル</button>
+                        <button type="submit" class="save-btn">保存する</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
