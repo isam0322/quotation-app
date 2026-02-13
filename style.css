@@ -674,6 +674,22 @@ textarea {
         font-size: 2rem;
     }
 
+    /* Fix Search Bar Overflow on Mobile */
+    .search-input-group {
+        flex-direction: column;
+    }
+
+    .search-scope-select {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        min-width: auto;
+    }
+
+    .input-container {
+        width: 100%;
+    }
+
     .form-row {
         flex-direction: column;
         gap: 0;
@@ -684,13 +700,14 @@ textarea {
     }
 
     .quote-card {
-        padding: 1.2rem;
+        padding: 1.25rem;
     }
 
     .quote-text {
-        font-size: 1.2rem;
-        /* Ensure text doesn't overflow screen */
-        word-break: break-all;
-        overflow-wrap: break-word;
+        font-size: 1.1rem;
+        /* Natural text wrapping that breaks long words only if necessary */
+        word-break: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.8;
     }
 }
