@@ -96,11 +96,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Filter Chips (Categories) - Keeping for now as "Tags" or secondary filter
+    // Filter Chips (Now mapped to Folders)
     filterChips.forEach(chip => {
         chip.addEventListener('click', () => {
             filterChips.forEach(c => c.classList.remove('active'));
             chip.classList.add('active');
-            state.category = chip.dataset.category;
+
+            const category = chip.dataset.category;
+            if (category === 'all') {
+                state.filterType = 'all';
+                state.filterValue = 'all';
+            } else {
+                state.filterType = 'folder';
+                state.filterValue = category;
+            }
+            state.category = 'all'; // Reset legacy category state
             renderQuotes();
         });
     });
