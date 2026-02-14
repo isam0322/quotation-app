@@ -699,6 +699,11 @@ textarea {
         grid-template-columns: 1fr;
     }
 
+    /* Make buttons always visible on mobile */
+    .card-actions {
+        opacity: 1;
+    }
+
     .quote-card {
         padding: 1.25rem;
     }

@@ -113,7 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = 'hidden';
 
         if (quoteId) {
-            const quote = quotes.find(q => q.id === quoteId);
+            // Compare as strings to be safe (attributes are strings)
+            const quote = quotes.find(q => String(q.id) === String(quoteId));
             if (quote) {
                 document.getElementById('modal-title').innerText = '言葉を編集する';
                 document.getElementById('quote-id').value = quote.id;
