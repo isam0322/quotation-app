@@ -55,8 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     };
-    addFolderBtn.addEventListener('click', createFolderHandler);
-    quickAddFolderBtn.addEventListener('click', createFolderHandler);
+
+    if (addFolderBtn) addFolderBtn.addEventListener('click', createFolderHandler);
+    if (quickAddFolderBtn) quickAddFolderBtn.addEventListener('click', createFolderHandler);
 
     // Toggle Search Section
     searchToggleBtn.addEventListener('click', () => {
@@ -359,7 +360,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const bottomNavBtns = document.querySelectorAll('.bottom-nav .nav-btn');
     const mobileAddBtn = document.getElementById('mobile-add-btn');
 
-    mobileAddBtn.addEventListener('click', () => openModal());
+    if (mobileAddBtn) {
+        mobileAddBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent bubbling just in case
+            console.log('Mobile Add Clicked');
+            openModal();
+        });
+    }
 
     bottomNavBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
