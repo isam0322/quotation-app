@@ -268,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.handleDelete = deleteQuote;
     window.handleEdit = openModal;
+    window.openModal = openModal; // Expose for inline onclick
 
     function renderQuotes() {
         let filtered = quotes;

@@ -760,6 +760,14 @@ textarea {
         gap: 1.5rem;
     }
 
+    /* Mobile Logo Fix */
+    .logo {
+        font-size: 1.8rem;
+        /* Reduced from 3rem or 2rem to prevent overflow */
+        letter-spacing: 0.05em;
+        /* Tighter spacing */
+    }
+
     /* Library View State */
     .sidebar.mobile-visible {
         display: block;
