@@ -19,24 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- State ---
     let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
-    // Comprehensive default folders
+    // User requested specific short list
     const defaultFolders = [
-        '心に響く', 'アイデア', '仕事', '人間関係',
-        '恋愛・結婚', 'ビジネス・起業', 'お金・投資', '健康・メンタル',
-        '勇気', '癒し', '戒め', '笑い・ユーモア', 'モチベーション',
-        '本・小説', '映画・ドラマ', 'アニメ・漫画', '歌詞',
-        '自分の言葉', 'その他'
+        'ビジネス', '人間関係', '心に響く', 'モチベーション', '自分の言葉', 'その他'
     ];
 
-    let storedFolders = JSON.parse(localStorage.getItem('folders'));
-    // Migration: If no folders or only old defaults (<= 4 items), replace with new full list
-    let folders;
-    if (!storedFolders || storedFolders.length <= 4) {
-        folders = defaultFolders;
-        localStorage.setItem('folders', JSON.stringify(folders)); // Auto-save new defaults
-    } else {
-        folders = storedFolders;
-    }
+    // Force Reset: Overwrite folders with the new short list
+    let folders = defaultFolders;
+    localStorage.setItem('folders', JSON.stringify(folders)); // Update storage immediately
     let state = {
         filterType: 'all', // all, favorites, folder, author, tag
         filterValue: 'all', // 'all', 'ID_OF_FOLDER', 'Steve Jobs', etc.
