@@ -285,6 +285,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderQuotes();
 
+    // --- Bottom Navigation Logic (Mobile) ---
+    const bottomNavBtns = document.querySelectorAll('.bottom-nav .nav-btn');
+    const mobileAddBtn = document.getElementById('mobile-add-btn');
+
+    mobileAddBtn.addEventListener('click', () => openModal());
+
+    bottomNavBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = btn.dataset.target;
+            if (!target) return; // Ignore add button here
+
+            // Active State
+            bottomNavBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // View Switching
+            handleMobileViewSwitch(target);
+        });
+    });
+
+    function handleMobileViewSwitch(target) {
+        const sidebar = document.querySelector('.sidebar');
+        const contentArea = document.querySelector('.content-area');
+        const searchSection = document.getElementById('search-section');
+
+        // Reset views
+        sidebar.classList.remove('mobile-visible');
+        contentArea.classList.remove('hidden');
+        searchSection.classList.add('hidden');
+
+        // Scroll to top
+        window.scrollTo(0, 0);
+
+        if (target === 'home') {
+            // Show Quotes
+        } else if (target === 'search') {
+            searchSection.classList.remove('hidden');
+            document.getElementById('search-input').focus();
+        } else if (target === 'library') {
+            // Show Sidebar overlay
+            sidebar.classList.add('mobile-visible');
+            contentArea.classList.add('hidden'); // Optional: hide content behind
+        } else if (target === 'settings') {
+            // todo
+        }
+    }
+
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

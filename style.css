@@ -23,6 +23,9 @@
     --font-sans: 'Inter', sans-serif;
 
     --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    /* Mobile Safe Area */
+    --safe-area-bottom: env(safe-area-inset-bottom);
 }
 
 * {
@@ -58,6 +61,8 @@ body {
 
 .app-container {
     padding: 2rem;
+    padding-bottom: 80px;
+    /* Space for bottom nav on mobile */
 }
 
 /* Main Layout (Sidebar + Content) */
@@ -73,7 +78,6 @@ body {
     position: sticky;
     top: 2rem;
     background: var(--surface-color);
-    /* Subtle bg for sidebar */
     padding: 1.5rem;
     border-radius: 4px;
     border: 1px solid var(--border-color);
@@ -99,7 +103,6 @@ body {
 .nav-item {
     display: flex;
     justify-content: space-between;
-    /* For badge count support later */
     align-items: center;
     padding: 0.6rem 0.8rem;
     color: var(--text-secondary);
@@ -164,14 +167,6 @@ body {
     color: var(--text-primary);
     line-height: 1;
     margin-bottom: 0.2rem;
-}
-
-.subtitle {
-    font-family: var(--font-serif);
-    font-size: 0.9rem;
-    color: var(--accent-color);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
 }
 
 .header-controls {
@@ -623,58 +618,117 @@ textarea {
     }
 }
 
-/* Responsive */
+/* Bottom Nav (Mobile Only) */
+.bottom-nav {
+    display: none;
+    /* Hidden on desktop */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    padding-bottom: calc(0.5rem + var(--safe-area-bottom));
+    z-index: 900;
+    justify-content: space-around;
+    align-items: flex-end;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    flex: 1;
+}
+
+.nav-btn i {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+}
+
+.nav-btn.active {
+    color: var(--accent-color);
+}
+
+/* Special Add Button for Mobile */
+.add-btn-mobile {
+    position: relative;
+    top: -20px;
+    overflow: visible;
+}
+
+.add-icon-circle {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #1a1a1a;
+    font-size: 1.5rem;
+    box-shadow: 0 5px 15px rgba(197, 164, 94, 0.4);
+    border: 4px solid var(--bg-color);
+    /* Creates cut-out effect */
+}
+
+/* Responsive Overrides */
 @media (max-width: 768px) {
     .app-container {
         padding: 1rem;
+        padding-bottom: 90px;
+    }
+
+    /* Hide Desktop Elements */
+    .sidebar {
+        display: none;
+        /* Default hidden, toggled via JS for Library tab */
+    }
+
+    .header-controls {
+        display: none;
+        /* Hide top add/search buttons */
+    }
+
+    /* Show Mobile Elements */
+    .bottom-nav {
+        display: flex;
     }
 
     .main-layout {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.5rem;
     }
 
-    .sidebar {
-        position: relative;
+    /* Library View State */
+    .sidebar.mobile-visible {
+        display: block;
+        position: fixed;
         top: 0;
-        margin-bottom: 2rem;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 70px);
+        z-index: 800;
+        border-radius: 0;
+        overflow-y: auto;
+        padding-bottom: 5rem;
+        animation: fadeIn 0.3s ease;
     }
 
-    /* Make sidebar scrollable horizontally if needed, or wrap items */
-    .sidebar .nav-links {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .sidebar .nav-item {
-        flex: 1;
-        min-width: 120px;
-        justify-content: center;
-        border: 1px solid var(--border-color);
-    }
-
-    .sidebar-section {
+    /* Fix Search Bar in Content */
+    .search-section {
         margin-bottom: 1.5rem;
     }
 
-    .app-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .header-controls {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .logo {
-        font-size: 2rem;
-    }
-
-    /* Fix Search Bar Overflow on Mobile */
     .search-input-group {
         flex-direction: column;
     }
@@ -683,7 +737,6 @@ textarea {
         width: 100%;
         border-right: none;
         border-bottom: 1px solid var(--border-color);
-        min-width: auto;
     }
 
     .input-container {
@@ -699,18 +752,17 @@ textarea {
         grid-template-columns: 1fr;
     }
 
-    /* Make buttons always visible on mobile */
-    .card-actions {
-        opacity: 1;
-    }
-
     .quote-card {
         padding: 1.25rem;
     }
 
+    .card-actions {
+        opacity: 1;
+        /* Always visible on mobile */
+    }
+
     .quote-text {
         font-size: 1.1rem;
-        /* Natural text wrapping that breaks long words only if necessary */
         word-break: normal;
         overflow-wrap: anywhere;
         line-height: 1.8;
