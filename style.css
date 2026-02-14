@@ -729,6 +729,7 @@ textarea {
     font-size: 1.5rem;
     box-shadow: 0 5px 15px rgba(197, 164, 94, 0.4);
     border: 4px solid var(--bg-color);
+    pointer-events: none;
     /* Creates cut-out effect */
 }
 
