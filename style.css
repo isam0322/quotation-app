@@ -91,9 +91,30 @@ body {
     font-family: var(--font-serif);
     font-size: 1.1rem;
     color: var(--accent-color);
+    margin: 0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--border-color);
+}
+
+.icon-btn-small {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.2rem;
+    transition: var(--transition);
+}
+
+.icon-btn-small:hover {
+    color: var(--accent-color);
 }
 
 .nav-links {
@@ -313,25 +334,31 @@ body {
 /* Quotes Grid */
 .quotes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
 }
 
 .quote-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 2px;
-    padding: 2.5rem 2rem;
+    background: #1e2029;
+    /* Keep dark card bg */
+    /* Remove border for cleaner look, use shadow for depth */
+    border: none;
+    border-radius: 12px;
+    /* Softer corners */
+    padding: 2rem;
     position: relative;
     transition: var(--transition);
     display: flex;
     flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    /* Subtle depth */
 }
 
 .quote-card:hover {
     transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--border-light);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    background: #232630;
+    /* Slight lighten on hover */
 }
 
 .quote-card::before {
@@ -340,10 +367,12 @@ body {
     top: 1rem;
     left: 1.5rem;
     font-family: var(--font-serif);
-    font-size: 4rem;
-    color: var(--border-color);
-    opacity: 0.5;
+    font-size: 5rem;
+    color: var(--accent-color);
+    opacity: 0.15;
+    /* More subtle */
     line-height: 1;
+    pointer-events: none;
 }
 
 .quote-content-wrapper {
@@ -354,40 +383,56 @@ body {
 
 .quote-text {
     font-family: var(--font-serif);
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     color: var(--text-primary);
-    line-height: 1.7;
+    line-height: 1.8;
     margin-bottom: 1.5rem;
     white-space: pre-wrap;
+    letter-spacing: 0.02em;
 }
 
 .quote-meta {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    border-left: 2px solid var(--accent-color);
-    padding-left: 1rem;
+    gap: 0.2rem;
+    /* Remove border-left for cleaner look */
+    padding-left: 0;
 }
 
 .quote-author {
-    font-weight: 500;
-    font-size: 1rem;
-    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--accent-color);
+    font-family: var(--font-sans);
+    letter-spacing: 0.05em;
 }
 
 .quote-source {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     font-style: italic;
 }
 
 .quote-footer {
     margin-top: auto;
-    padding-top: 1.5rem;
+    padding-top: 1.2rem;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* New Folder Badge Style */
+.folder-badge {
+    background: rgba(197, 164, 94, 0.1);
+    color: var(--accent-color);
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
 }
 
 .quote-tags {
@@ -403,13 +448,17 @@ body {
 
 .card-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.8rem;
     opacity: 0;
     transition: var(--transition);
 }
 
-.quote-card:hover .card-actions {
-    opacity: 1;
+/* Ensure actions visible on hover or mobile */
+.quote-card:hover .card-actions,
+@media (max-width: 768px) {
+    .card-actions {
+        opacity: 1;
+    }
 }
 
 .card-action-btn {
@@ -417,12 +466,14 @@ body {
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.1rem;
     transition: var(--transition);
+    padding: 0.2rem;
 }
 
 .card-action-btn:hover {
-    color: var(--text-primary);
+    color: var(--accent-color);
+    transform: scale(1.1);
 }
 
 .card-action-btn.delete:hover {
