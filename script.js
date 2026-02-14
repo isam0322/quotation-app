@@ -19,13 +19,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- State ---
     let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+    let folders = JSON.parse(localStorage.getItem('folders')) || ['Ideas', 'Work', 'Life']; // Default folders
     let state = {
-        filterType: 'all', // all, favorites, author, tag
-        filterValue: 'all', // 'all', 'Steve Jobs', 'life', etc.
-        category: 'all', // from chips
+        filterType: 'all', // all, favorites, folder, author, tag
+        filterValue: 'all', // 'all', 'ID_OF_FOLDER', 'Steve Jobs', etc.
+        category: 'all', // from chips (legacy compatibility, maybe map to folders later?)
         searchQuery: '',
         searchScope: 'all' // all, content, author, tag
     };
+
+    // --- DOM Elements for Folders ---
+    const folderList = document.getElementById('folder-list');
+    const folderSelect = document.getElementById('folder-select');
+    const addFolderBtn = document.getElementById('add-folder-btn');
+    const quickAddFolderBtn = document.getElementById('quick-add-folder-btn');
 
     // --- Event Listeners ---
     addQuoteBtn.addEventListener('click', () => openModal());
@@ -33,6 +40,23 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', (e) => {
         if (e.target === document.querySelector('.modal-backdrop')) closeModalFunc();
     });
+
+    // Folder Creation
+    const createFolderHandler = () => {
+        const name = prompt('新しいフォルダ名を入力してください:');
+        if (name && name.trim()) {
+            if (!folders.includes(name.trim())) {
+                folders.push(name.trim());
+                saveFolders();
+                updateSidebar(); // Re-render sidebar
+                updateFolderSelect(); // Re-render dropdown
+            } else {
+                alert('そのフォルダ名は既に存在します');
+            }
+        }
+    };
+    addFolderBtn.addEventListener('click', createFolderHandler);
+    quickAddFolderBtn.addEventListener('click', createFolderHandler);
 
     // Toggle Search Section
     searchToggleBtn.addEventListener('click', () => {
@@ -63,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderQuotes();
     });
 
-    // Filter Chips (Categories)
+    // Filter Chips (Categories) - Keeping for now as "Tags" or secondary filter
     filterChips.forEach(chip => {
         chip.addEventListener('click', () => {
             filterChips.forEach(c => c.classList.remove('active'));
@@ -85,8 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.filterType = item.dataset.type;
                 state.filterValue = item.dataset.value;
 
-                // Reset other filters for clarity? Or keep them combinable?
-                // For "Browse Mode", let's reset category chips to All for clarity
+                // Reset category chips on main view change
                 if (state.filterType !== 'all') {
                     state.category = 'all';
                     filterChips.forEach(c => c.classList.remove('active'));
@@ -98,6 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Mobile: Scroll to content
                 if (window.innerWidth <= 900) {
                     document.querySelector('.content-area').scrollIntoView({ behavior: 'smooth' });
+                    // Also close sidebar on mobile if it was open (Library view)
+                    const sidebar = document.querySelector('.sidebar');
+                    if (sidebar.classList.contains('mobile-visible')) {
+                        document.querySelector('.nav-btn[data-target="home"]').click(); // Simulate home click to return
+                    }
                 }
             });
         });
@@ -107,10 +135,26 @@ document.addEventListener('DOMContentLoaded', () => {
     quoteForm.addEventListener('submit', handleFormSubmit);
 
     // --- Functions ---
+    function saveFolders() {
+        localStorage.setItem('folders', JSON.stringify(folders));
+    }
+
+    function updateFolderSelect() {
+        // Current value
+        const currentVal = folderSelect.value;
+        folderSelect.innerHTML = `<option value="">(未分類)</option>` +
+            folders.map(f => `<option value="${f}">${f}</option>`).join('');
+
+        // Restore value if exists
+        if (folders.includes(currentVal)) {
+            folderSelect.value = currentVal;
+        }
+    }
 
     function openModal(quoteId = null) {
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
+        updateFolderSelect(); // Ensure dropdown is up to date
 
         if (quoteId) {
             // Compare as strings to be safe (attributes are strings)
@@ -121,7 +165,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('content').value = quote.content;
                 document.getElementById('author').value = quote.author || '';
                 document.getElementById('source').value = quote.source || '';
-                document.getElementById('category').value = quote.category || 'General';
+
+                // Map legacy category to folder if possible, or use new folder prop
+                document.getElementById('folder-select').value = quote.folder || '';
+
                 document.getElementById('tags').value = quote.tags ? quote.tags.join(', ') : '';
                 document.getElementById('note').value = quote.note || '';
             }
@@ -129,6 +176,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('modal-title').innerText = '言葉を記録する';
             quoteForm.reset();
             document.getElementById('quote-id').value = '';
+            // If currently viewing a folder, default to that folder
+            if (state.filterType === 'folder') {
+                document.getElementById('folder-select').value = state.filterValue;
+            }
         }
     }
 
@@ -148,7 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
             content: form.content.value,
             author: form.author.value,
             source: form.source.value,
-            category: form.category.value,
+            folder: document.getElementById('folder-select').value, // NEW
+            category: 'General', // Legacy support
             tags: form.tags.value.split(',').map(t => t.trim()).filter(t => t),
             note: form.note.value,
             updatedAt: Date.now(),
@@ -165,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         saveToLocalStorage();
-        updateSidebar(); // Re-render sidebar to show new authors/tags
+        updateSidebar();
         renderQuotes();
         closeModalFunc();
     }
@@ -185,6 +237,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Sidebar Rendering ---
     function updateSidebar() {
+        // 0. Folders
+        folderList.innerHTML = folders.map(folder => `
+            <li class="nav-item" data-type="folder" data-value="${folder}">
+                <i class="fas fa-folder"></i> ${folder}
+            </li>
+        `).join('');
+
         // 1. Authors
         const authors = [...new Set(quotes.map(q => q.author).filter(a => a))].sort();
         authorList.innerHTML = authors.map(author => `
@@ -215,6 +274,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Sidebar Navigation Filter
         if (state.filterType === 'favorites') {
             filtered = filtered.filter(q => q.isFavorite);
+        } else if (state.filterType === 'folder') {
+            filtered = filtered.filter(q => q.folder === state.filterValue);
         } else if (state.filterType === 'author') {
             filtered = filtered.filter(q => q.author === state.filterValue);
         } else if (state.filterType === 'tag') {
@@ -246,6 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (filtered.length === 0) {
             let msg = '条件に一致する言葉が見つかりませんでした。';
             if (filtered.length === 0 && quotes.length === 0) msg = 'まだ記録がありません。';
+            if (state.filterType === 'folder' && filtered.length === 0) msg = 'このフォルダは空です。';
 
             quotesList.innerHTML = `<div class="empty-state"><p>${msg}</p></div>`;
             return;
@@ -254,6 +316,11 @@ document.addEventListener('DOMContentLoaded', () => {
         quotesList.innerHTML = filtered.map(quote => {
             const tagsHtml = quote.tags.length > 0
                 ? `<div class="quote-tags">${quote.tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>`
+                : '';
+
+            // Show folder badge if not in folder view
+            const folderBadge = (quote.folder && state.filterType !== 'folder')
+                ? `<span class="tag" style="color: var(--accent-color); border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 4px; margin-right: 8px;"><i class="fas fa-folder" style="margin-right:4px;"></i>${quote.folder}</span>`
                 : '';
 
             return `
@@ -266,7 +333,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="quote-footer">
-                    ${tagsHtml}
+                    <div style="display:flex; align-items:center; gap: 0.5rem; flex-wrap:wrap;">
+                        ${folderBadge}
+                        ${tagsHtml}
+                    </div>
                     <div class="card-actions">
                         <button onclick="handleEdit('${quote.id}')" class="card-action-btn edit"><i class="fas fa-edit"></i></button>
                         <button onclick="handleDelete('${quote.id}')" class="card-action-btn delete"><i class="fas fa-trash"></i></button>
